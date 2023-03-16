@@ -1,0 +1,41 @@
+{
+  "name": "ATC Hygrometer MQTT",
+  "version": "1.0.0",
+  "slug": "atc-hygrometer-mqtt",
+  "description": "A HomeAssistant add-on to enable reading ATC Hygrometers",
+  "url": "https://github.com/richardhopton/atc-hygrometer-mqtt",
+  "startup": "application",
+  "arch": ["aarch64", "amd64", "armhf", "armv7", "i386"],
+  "boot": "auto",
+  "services": ["mqtt:need"],
+  "options": {
+    "mqtt_host": "<auto_detect>",
+    "mqtt_port": "<auto_detect>",
+    "mqtt_user": "<auto_detect>",
+    "mqtt_password": "<auto_detect>",
+    "proxy_address": "bt_proxy.local",
+    "proxy_port": "6053",
+    "proxy_password": "",
+    "hygrometers": [
+      {
+        "mac": "A4:01:02:03:04",
+        "name": "Lounge"
+      }
+    ]
+  },
+  "schema": {
+    "mqtt_host": "str",
+    "mqtt_port": "str",
+    "mqtt_user": "str",
+    "mqtt_password": "password",
+    "proxy_address": "str",
+    "proxy_port": "port?",
+    "proxy_password": "password?",
+    "hygrometers": [
+      {
+        "mac": "str",
+        "name": "str"
+      }
+    ]
+  }
+}
