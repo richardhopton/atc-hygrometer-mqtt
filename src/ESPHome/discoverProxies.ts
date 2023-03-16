@@ -28,7 +28,7 @@ export const discoverProxies = async (password: string) => {
     let discoveryTimes = 0;
     const interval = setInterval(() => {
       browser.stop();
-      if (discoveryTimes > 4) {
+      if (discoveryTimes > 4 && proxies.length) {
         clearInterval(interval);
         logInfo(`[ESPHome] Discovered ${proxies.length} proxies after 60 seconds`);
         bonjour.destroy();
