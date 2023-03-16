@@ -4,7 +4,7 @@ import { BluetoothLEAdvertisement, IESPConnection } from './IESPConnection';
 
 export class ESPConnection extends EventEmitter implements IESPConnection {
   private subscribedToBLEAdvertisements = false;
-  constructor(private connection: Connection) {
+  constructor(private connections: Connection[]) {
     super();
   }
 
@@ -17,7 +17,10 @@ export class ESPConnection extends EventEmitter implements IESPConnection {
 
   subscribeToBLEAdvertisements() {
     if (this.subscribedToBLEAdvertisements) return;
-    this.connection.bluetoothAdvertisementService(this.bluetoothLEAdvertisementListener.bind(this));
     this.subscribedToBLEAdvertisements = true;
+    const listener = this.bluetoothLEAdvertisementListener.bind(this);
+    for (const connection of this.connections) {
+      connection.bluetoothAdvertisementService(listener);
+    }
   }
 }

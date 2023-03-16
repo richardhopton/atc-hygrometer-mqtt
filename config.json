@@ -13,8 +13,8 @@
     "mqtt_port": "<auto_detect>",
     "mqtt_user": "<auto_detect>",
     "mqtt_password": "<auto_detect>",
-    "proxy_address": "bt_proxy.local",
-    "proxy_port": "6053",
+    "proxy_address": "<discover>",
+    "proxy_port": "",
     "proxy_password": "",
     "hygrometers": [
       {
@@ -29,7 +29,7 @@
     "mqtt_user": "str",
     "mqtt_password": "password",
     "proxy_address": "str",
-    "proxy_port": "port?",
+    "proxy_port": "str?",
     "proxy_password": "password?",
     "hygrometers": [
       {

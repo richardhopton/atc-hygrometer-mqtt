@@ -4,7 +4,7 @@
 
 "@2colors/esphome-native-api@https://github.com/richardhopton/esphome-native-api":
   version "1.0.9"
-  resolved "https://github.com/richardhopton/esphome-native-api#c01bb976edb17ed1ccf92498e55df08ba605b3ab"
+  resolved "https://github.com/richardhopton/esphome-native-api#9746b265e3f875d8e51bab885dc9e6c20de647c6"
   dependencies:
     google-protobuf "^3.21.2"
     multicast-dns "^7.2.5"
@@ -1437,9 +1437,9 @@ duplexify@^4.1.1:
     stream-shift "^1.0.0"
 
 electron-to-chromium@^1.4.284:
-  version "1.4.330"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.330.tgz#4740378db7160d7210afb29800c74048cdf10a99"
-  integrity sha512-PqyefhybrVdjAJ45HaPLtuVaehiSw7C3ya0aad+rvmV53IVyXmYRk3pwIOb2TxTDTnmgQdn46NjMMaysx79/6Q==
+  version "1.4.331"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.331.tgz#c8ea823968563ef2cbb3495233e9e16c48c54a4a"
+  integrity sha512-tdtr9y9oJl8VDiS+HeB6e/JDJqdDGjIk3yRfEMHm5rDnWQ/D5SbafybAayInxolbfbH6pouV5g7ZUAwE/WVtHw==
 
 emittery@^0.13.1:
   version "0.13.1"
