@@ -9,7 +9,7 @@ export const discoverProxies = async (password: string) => {
     const proxies: Connection[] = [];
     const checkForBluetoothProxy = ({ host, port }: { host: string; port: number }) => {
       const connection = new Connection({ host, port, password }) as any;
-      connection.on('message.DeviceInfoResponse', ({ bluetoothProxyVersion }: { bluetoothProxyVersion: number }) => {
+      connection.once('message.DeviceInfoResponse', ({ bluetoothProxyVersion }: { bluetoothProxyVersion: number }) => {
         if (bluetoothProxyVersion > 0) {
           logInfo('[ESPHome] Discovered:', host);
           proxies.push(connection);
@@ -17,7 +17,7 @@ export const discoverProxies = async (password: string) => {
           connection.disconnect();
         }
       });
-      connection.on('authorized', () => connection.deviceInfoService());
+      connection.once('authorized', () => connection.deviceInfoService());
       connection.connect();
     };
 

@@ -13,9 +13,11 @@
     "mqtt_port": "<auto_detect>",
     "mqtt_user": "<auto_detect>",
     "mqtt_password": "<auto_detect>",
-    "proxy_address": "<discover>",
-    "proxy_port": "",
-    "proxy_password": "",
+    "proxies": [
+      {
+        "host": "bt-proxy.local"
+      }
+    ],
     "hygrometers": [
       {
         "mac": "A4:01:02:03:04",
@@ -28,9 +30,13 @@
     "mqtt_port": "str",
     "mqtt_user": "str",
     "mqtt_password": "password",
-    "proxy_address": "str",
-    "proxy_port": "str?",
-    "proxy_password": "password?",
+    "proxies": [
+      {
+        "host": "str",
+        "port": "int(1,65536)?",
+        "password": "password?"
+      }
+    ],
     "hygrometers": [
       {
         "mac": "str",

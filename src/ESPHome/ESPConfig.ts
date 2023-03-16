@@ -1,16 +1,16 @@
 import { readFileSync } from 'fs';
 
+export type ProxyConfig = {
+  host: string;
+  port: number | undefined;
+  password: string | undefined;
+};
+
 interface OptionsJson {
-  proxy_address: string;
-  proxy_port: number | null;
-  proxy_password: string | null;
+  proxies: ProxyConfig[];
 }
 
 const fileContents = readFileSync('../data/options.json');
 const options: OptionsJson = JSON.parse(fileContents.toString());
 
-export const getProxy = () => ({
-  host: options.proxy_address,
-  port: options.proxy_port || 6053,
-  password: options.proxy_password || '',
-});
+export const getProxies = () => options.proxies || [];
