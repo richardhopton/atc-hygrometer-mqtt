@@ -1,12 +1,13 @@
-import { Connection, Discovery } from '@2colors/esphome-native-api';
+import { Connection } from '@2colors/esphome-native-api';
 import { logInfo } from '@utils/logger';
+import { seconds } from '@utils/seconds';
+import Bonjour from 'bonjour';
 
 export const discoverProxies = async (password: string) => {
   logInfo('[ESPHome] Discovering...');
-
   return new Promise<Connection[]>((resolve) => {
-    const checkedHosts: string[] = [];
     const proxies: Connection[] = [];
+
     const checkForBluetoothProxy = ({ host, port }: { host: string; port: number }) => {
       const connection = new Connection({ host, port, password }) as any;
       connection.on('message.DeviceInfoResponse', ({ bluetoothProxyVersion }: { bluetoothProxyVersion: number }) => {
@@ -21,27 +22,22 @@ export const discoverProxies = async (password: string) => {
       connection.connect();
     };
 
-    const discovery = new Discovery();
+    const bonjour = Bonjour();
+    const browser = bonjour.find({ type: 'esphomelib' });
+    browser.on('up', checkForBluetoothProxy);
     let discoveryTimes = 0;
-    const discoveryInterval: NodeJS.Timer = setInterval(() => {
-      discovery.destroy();
+    const interval = setInterval(() => {
+      browser.stop();
       if (discoveryTimes > 4) {
-        clearInterval(discoveryInterval);
+        clearInterval(interval);
         logInfo(`[ESPHome] Discovered ${proxies.length} proxies after 60 seconds`);
+        bonjour.destroy();
         resolve(proxies);
         return;
       }
       discoveryTimes++;
       logInfo('[ESPHome] Still discovering...', `${discoveryTimes * 10} seconds...`);
-      discovery.run();
-    }, 10_000);
-    discovery.on('info', (info: any) => {
-      const { host, port } = info;
-      if (checkedHosts.includes(host)) return;
-      checkedHosts.push(host);
-      //discoveryTimes = 0;
-      checkForBluetoothProxy({ host, port });
-    });
-    discovery.run();
+      browser.start();
+    }, seconds(10));
   });
 };
