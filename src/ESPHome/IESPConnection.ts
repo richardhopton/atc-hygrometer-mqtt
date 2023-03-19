@@ -1,4 +1,4 @@
-export type BluetoothLEAdvertisement = {
+export type BLEAdvertisement = {
   mac: string;
   name: string;
   rssi: number;
@@ -10,7 +10,9 @@ export type BluetoothLEAdvertisement = {
   addressType: number;
 };
 
+export type BLEAdvertisementListener = (advertisement: BLEAdvertisement) => void;
+
 export interface IESPConnection {
-  subscribeToBLEAdvertisements(): void;
-  on(event: 'BluetoothLEAdvertisement', listener: (advertisement: BluetoothLEAdvertisement) => void): this;
+  reconnect(): Promise<void>;
+  subscribeToBLEAdvertisements(listener: BLEAdvertisementListener): void;
 }

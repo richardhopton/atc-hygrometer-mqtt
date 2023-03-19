@@ -5,15 +5,14 @@ import { getProxies, ProxyConfig } from './ESPConfig';
 import { ESPConnection } from './ESPConnection';
 import { IESPConnection } from './IESPConnection';
 
-const connectToProxy = (config: ProxyConfig) => {
-  const connection = new Connection(config);
+export const connect = (connection: Connection) => {
   return new Promise<Connection>((resolve, reject) => {
     const errorHandler = (error: any) => {
       logError('[ESPHome] Connecting:', error);
       reject(error);
     };
     connection.once('authorized', () => {
-      logInfo('[ESPHome] Connected:', config.host);
+      logInfo('[ESPHome] Connected:', connection.host);
       connection.off('error', errorHandler);
       resolve(connection);
     });
@@ -29,6 +28,11 @@ export const connectToESPHome = async (): Promise<IESPConnection> => {
   const useDiscovery = proxies.length === 1 && proxies[0].host === '<discover>';
   const connections = useDiscovery
     ? await discoverProxies(proxies[0].password || '')
-    : await Promise.all(proxies.map(connectToProxy));
+    : await Promise.all(
+        proxies.map(async (config: ProxyConfig) => {
+          const connection = new Connection(config);
+          return await connect(connection);
+        })
+      );
   return new ESPConnection(connections);
 };

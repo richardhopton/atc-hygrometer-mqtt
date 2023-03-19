@@ -2,7 +2,8 @@ import { IMQTTConnection } from '@mqtt/IMQTTConnection';
 import { bytesToNumber } from '@utils/bytesToNumber';
 import { Dictionary } from '@utils/Dictionary';
 import { logInfo } from '@utils/logger';
-import { IESPConnection } from 'ESPHome/IESPConnection';
+import { minutes } from '@utils/minutes';
+import { BLEAdvertisement, IESPConnection } from 'ESPHome/IESPConnection';
 import { buildMQTTDeviceData } from './buildMQTTDeviceData';
 import { BatteryLevelSensor } from './entities/BatteryLevelSensor';
 import { BatteryVoltageSensor } from './entities/BatteryVoltageSensor';
@@ -42,27 +43,30 @@ export const startDaemon = (mqtt: IMQTTConnection, esphome: IESPConnection) => {
       batteryVoltageSensor: new BatteryVoltageSensor(mqtt, deviceData),
     };
   }
-  esphome
-    .on('BluetoothLEAdvertisement', ({ mac, serviceDataList }) => {
-      const hygrometer = hygrometerMap[mac];
-      if (!hygrometer) return;
+  const listener = ({ mac, serviceDataList }: BLEAdvertisement): void => {
+    const hygrometer = hygrometerMap[mac];
+    if (!hygrometer) return;
 
-      const { legacyDataList } = serviceDataList.find((sd) => sd.uuid === '0x181A') || {};
-      if (legacyDataList?.length !== 13) return;
+    const { legacyDataList } = serviceDataList.find((sd) => sd.uuid === '0x181A') || {};
+    if (legacyDataList?.length !== 13) return;
 
-      const messageId = legacyDataList[12];
-      if (messageId <= hygrometer.lastMessageId) return;
+    const messageId = legacyDataList[12];
+    if (messageId <= hygrometer.lastMessageId) return;
 
-      const { name, temperatureSensor, humiditySensor, batteryLevelSensor, batteryVoltageSensor } = hygrometer;
-      const { temperature, humidity, batteryLevel, batteryVoltage } = parseData(legacyDataList);
-      logInfo(`[Hygrometer] Updating state for ${mac} (${name})`);
+    const { name, temperatureSensor, humiditySensor, batteryLevelSensor, batteryVoltageSensor } = hygrometer;
+    const { temperature, humidity, batteryLevel, batteryVoltage } = parseData(legacyDataList);
+    logInfo(`[Hygrometer] Updating state for ${mac} (${name})`);
+    temperatureSensor.setState(temperature);
+    humiditySensor.setState(humidity);
+    batteryLevelSensor.setState(batteryLevel);
+    batteryVoltageSensor.setState(batteryVoltage);
 
-      temperatureSensor.setState(temperature);
-      humiditySensor.setState(humidity);
-      batteryLevelSensor.setState(batteryLevel);
-      batteryVoltageSensor.setState(batteryVoltage);
+    hygrometer.lastMessageId = messageId;
+  };
+  esphome.subscribeToBLEAdvertisements(listener);
 
-      hygrometer.lastMessageId = messageId;
-    })
-    .subscribeToBLEAdvertisements();
+  setInterval(async () => {
+    await esphome.reconnect();
+    esphome.subscribeToBLEAdvertisements(listener);
+  }, minutes(60));
 };

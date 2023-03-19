@@ -24,6 +24,6 @@ process.on('uncaughtException', (err) => {
 const start = async (): Promise<void> => {
   const mqtt = await connectToMQTT();
   const esphome = await connectToESPHome();
-  startDaemon(mqtt, esphome);
+  if (esphome) startDaemon(mqtt, esphome);
 };
 void start();

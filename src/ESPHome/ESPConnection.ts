@@ -1,26 +1,44 @@
 import { BluetoothLEAdvertisementResponse, Connection } from '@2colors/esphome-native-api';
-import EventEmitter from 'events';
-import { BluetoothLEAdvertisement, IESPConnection } from './IESPConnection';
+import { logInfo } from '@utils/logger';
+import { connect } from './connectToESPHome';
+import { BLEAdvertisement, BLEAdvertisementListener, IESPConnection } from './IESPConnection';
 
-export class ESPConnection extends EventEmitter implements IESPConnection {
+export class ESPConnection implements IESPConnection {
   private subscribedToBLEAdvertisements = false;
+  private bleAdvertisementListener: BLEAdvertisementListener | null = null;
   constructor(private connections: Connection[]) {
-    super();
+    this.bluetoothLEAdvertisementListener = this.bluetoothLEAdvertisementListener.bind(this);
+  }
+
+  async reconnect(): Promise<void> {
+    logInfo('[ESPHome] Reconnecting...');
+    this.connections = await Promise.all(
+      this.connections.map((connection) => {
+        connection.disconnect();
+        connection.connected = false;
+        return connect(new Connection({ host: connection.host, port: connection.port, password: connection.password }));
+      })
+    );
+    this.subscribedToBLEAdvertisements = false;
   }
 
   private bluetoothLEAdvertisementListener({ address, name, ...message }: BluetoothLEAdvertisementResponse) {
+    if (!this.bleAdvertisementListener) return;
+
     const mac = address.toString(16);
     if (!!name) name = Buffer.from(name, 'base64').toString('ascii');
-    const advertisement: BluetoothLEAdvertisement = { mac, name, ...message };
-    this.emit('BluetoothLEAdvertisement', advertisement);
+    const advertisement: BLEAdvertisement = { mac, name, ...message };
+    this.bleAdvertisementListener(advertisement);
   }
 
-  subscribeToBLEAdvertisements() {
+  subscribeToBLEAdvertisements(listener: BLEAdvertisementListener) {
     if (this.subscribedToBLEAdvertisements) return;
     this.subscribedToBLEAdvertisements = true;
-    const listener = this.bluetoothLEAdvertisementListener.bind(this);
+    this.bleAdvertisementListener = listener;
     for (const connection of this.connections) {
-      connection.bluetoothAdvertisementService(listener);
+      connection
+        .on('message.BluetoothLEAdvertisementResponse', this.bluetoothLEAdvertisementListener)
+        .subscribeBluetoothAdvertisementService();
     }
   }
 }
