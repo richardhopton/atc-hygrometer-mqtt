@@ -51,7 +51,7 @@ export const startDaemon = (mqtt: IMQTTConnection, esphome: IESPConnection) => {
     if (legacyDataList?.length !== 13) return;
 
     const messageId = legacyDataList[12];
-    if (messageId <= hygrometer.lastMessageId) return;
+    if (messageId === hygrometer.lastMessageId) return;
 
     const { name, temperatureSensor, humiditySensor, batteryLevelSensor, batteryVoltageSensor } = hygrometer;
     const { temperature, humidity, batteryLevel, batteryVoltage } = parseData(legacyDataList);
