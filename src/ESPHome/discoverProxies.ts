@@ -1,5 +1,6 @@
 import { Connection, Discovery } from '@2colors/esphome-native-api';
 import { logInfo } from '@utils/logger';
+import { connect } from './connect';
 
 export const discoverProxies = async (password: string) => {
   logInfo('[ESPHome] Discovering...');
@@ -7,7 +8,7 @@ export const discoverProxies = async (password: string) => {
   return new Promise<Connection[]>((resolve) => {
     const checkedHosts: string[] = [];
     const proxies: Connection[] = [];
-    const checkForBluetoothProxy = ({ host, port }: { host: string; port: number }) => {
+    const checkForBluetoothProxy = async ({ host, port }: { host: string; port: number }) => {
       const connection = new Connection({ host, port, password });
       connection.once('authorized', async () => {
         const { bluetoothProxyVersion } = await connection.deviceInfoService();
@@ -18,7 +19,7 @@ export const discoverProxies = async (password: string) => {
           connection.disconnect();
         }
       });
-      connection.connect();
+      await connect(connection);
     };
 
     const discovery = new Discovery();

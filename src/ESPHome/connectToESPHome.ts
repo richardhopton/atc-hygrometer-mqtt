@@ -1,25 +1,10 @@
 import { Connection } from '@2colors/esphome-native-api';
-import { logError, logInfo } from '@utils/logger';
+import { logInfo } from '@utils/logger';
+import { connect } from './connect';
 import { discoverProxies } from './discoverProxies';
 import { getProxies, ProxyConfig } from './ESPConfig';
 import { ESPConnection } from './ESPConnection';
 import { IESPConnection } from './IESPConnection';
-
-export const connect = (connection: Connection) => {
-  return new Promise<Connection>((resolve, reject) => {
-    const errorHandler = (error: any) => {
-      logError('[ESPHome] Connecting:', error);
-      reject(error);
-    };
-    connection.once('authorized', () => {
-      logInfo('[ESPHome] Connected:', connection.host);
-      connection.off('error', errorHandler);
-      resolve(connection);
-    });
-    connection.once('error', errorHandler);
-    connection.connect();
-  });
-};
 
 export const connectToESPHome = async (): Promise<IESPConnection> => {
   logInfo('[ESPHome] Connecting...');

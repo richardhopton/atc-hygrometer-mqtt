@@ -1,6 +1,6 @@
 import { BluetoothLEAdvertisementResponse, Connection } from '@2colors/esphome-native-api';
 import { logInfo } from '@utils/logger';
-import { connect } from './connectToESPHome';
+import { connect } from './connect';
 import { BLEAdvertisement, BLEAdvertisementListener, IESPConnection } from './IESPConnection';
 
 export class ESPConnection implements IESPConnection {
