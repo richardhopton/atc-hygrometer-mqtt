@@ -1,6 +1,6 @@
 import { IMQTTConnection } from '@mqtt/IMQTTConnection';
-import { bytesToNumber } from '@utils/bytesToNumber';
 import { Dictionary } from '@utils/Dictionary';
+import { bytesToNumber } from '@utils/bytesToNumber';
 import { logInfo } from '@utils/logger';
 import { minutes } from '@utils/minutes';
 import { BLEAdvertisement, IESPConnection } from 'ESPHome/IESPConnection';
@@ -9,7 +9,7 @@ import { BatteryLevelSensor } from './entities/BatteryLevelSensor';
 import { BatteryVoltageSensor } from './entities/BatteryVoltageSensor';
 import { HumiditySensor } from './entities/HumiditySensor';
 import { TemperatureSensor } from './entities/TemperatureSensor';
-import { getHygrometers, Hygrometer } from './options';
+import { Hygrometer, getHygrometers } from './options';
 
 const parseData = (data: Uint8Array) => {
   const temperature = bytesToNumber(data.slice(6, 8)) / 10;
@@ -55,7 +55,7 @@ export const startDaemon = (mqtt: IMQTTConnection, esphome: IESPConnection) => {
 
     const { name, temperatureSensor, humiditySensor, batteryLevelSensor, batteryVoltageSensor } = hygrometer;
     const { temperature, humidity, batteryLevel, batteryVoltage } = parseData(legacyDataList);
-    logInfo(`[Hygrometer] Updating state for ${mac} (${name})`);
+    logInfo(`[Hygrometer] Updating state for ${mac} (${name}) = ${temperature}`);
     temperatureSensor.setState(temperature);
     humiditySensor.setState(humidity);
     batteryLevelSensor.setState(batteryLevel);
