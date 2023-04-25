@@ -1,6 +1,6 @@
 {
   "name": "ATC Hygrometer MQTT",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "slug": "atc-hygrometer-mqtt",
   "description": "A HomeAssistant add-on to enable reading ATC Hygrometers",
   "url": "https://github.com/richardhopton/atc-hygrometer-mqtt",

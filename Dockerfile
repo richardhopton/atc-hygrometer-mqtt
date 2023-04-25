@@ -41,5 +41,5 @@ LABEL \
     io.hass.name="ATC Integration via MQTT" \
     io.hass.description="Home Assistant Community Add-on for ATC Hygrometer" \
     io.hass.type="addon" \
-    io.hass.version="1.0.0" \
+    io.hass.version="1.0.1" \
     maintainer="Richard Hopton <richard@thehoptons.com>"
